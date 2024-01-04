@@ -1,9 +1,25 @@
 import Head from "next/head";
+import { useState } from "react";
 import Input from "~/components/Input";
 import { api } from "~/utils/api";
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const post = api.POSTAPI.postSample.useMutation();
+  const [inputs, setInputs] = useState({
+    name: "",
+    age: "",
+    email: "",
+  });
+  const getInputData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const u = { [name]: value };
+    console.log(u);
+    setInputs((prev) => ({ ...prev, ...u }));
+  };
+
+  const sendInput = () => {
+    post.mutate(inputs);
+  };
 
   return (
     <>
@@ -13,9 +29,33 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <Input type="text" placeholder="Enter Name" />
-        <Input type="number" placeholder="Enter Age" />
-        <button className="btn btn-outline btn-primary my-10">Primary</button>
+        <Input
+          type="text"
+          placeholder="Enter Name"
+          onChange={getInputData}
+          name="name"
+          value={inputs.name}
+        />
+        <Input
+          type="text"
+          placeholder="Enter your Email"
+          onChange={getInputData}
+          name="email"
+          value={inputs.email}
+        />
+        <Input
+          type="text"
+          placeholder="Enter your Age"
+          onChange={getInputData}
+          name="age"
+          value={inputs.age}
+        />
+        <button
+          className="btn btn-outline btn-primary my-10"
+          onClick={sendInput}
+        >
+          Submit
+        </button>
       </main>
     </>
   );
